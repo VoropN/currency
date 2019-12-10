@@ -1,0 +1,21 @@
+.d3-chart {
+  width: 100%;
+  height: 400px;
+}
+
+.d3-chart .axis path,
+.d3-chart .axis line {
+  color: rgba(106, 255, 19, 0.4);
+}
+
+.d3-chart .axis {
+  stroke-width: 1;
+  fill: none;
+  color: #333;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.tooltip {	
+  stroke: rgb(255, 19, 19);
+}

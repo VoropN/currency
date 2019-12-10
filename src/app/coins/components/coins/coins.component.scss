@@ -1,0 +1,43 @@
+.mat-card-header-text {
+  width: 80%;
+}
+
+.mat-card-title {
+  font-size: 25px;
+}
+
+.coins {
+  &-container mat-card {
+    margin: 20px auto;
+  }
+  
+  &__card {
+    max-width: 90%;
+  }
+
+  &-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-around;
+    grid-gap: 25px;
+    align-items: center;
+  }
+  
+  &-data {
+    &__last {
+      text-align: right;
+      padding-top: 10px;
+      margin-right: 20px;
+      font-size: 12px;
+    }
+    
+    &__coin {
+      font-weight: 700;
+    }
+  }
+}
+.mat-card-image {
+  max-width: 25px;
+  margin-left: 5px;
+  justify-self: flex-end;
+}

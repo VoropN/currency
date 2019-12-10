@@ -1,0 +1,24 @@
+<app-search (searchInit)="onSearch($event)"></app-search>
+<div class="coins-container" *ngFor="let coinData of baseCoins; index as i; trackBy: coinsTrackByFn">
+  <div *ngIf="coinData.data$ | async as coin; else loading" class="coins-data">
+    <mat-card class="coins__card">
+      <div class="coins-info">
+        <mat-card-header>
+          <mat-card-title>{{coinData.info.name}}</mat-card-title>
+          <img mat-card-image [src]="coinData.info.iconUrl" alt="avatar">
+        </mat-card-header>
+        <div *ngIf="coin.history[coin.history.length - 1] as last" class="coins-data__last">
+          <div class="coins-data__date">{{last.timestamp | date: 'short'}}</div>
+          <div class="coins-data__coin">{{last.price}} USD</div>
+        </div>
+      </div>
+      <mat-card-content>
+        <app-graphics [data]="coin"></app-graphics>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<ng-template #loading>
+  <mat-progress-spinner color="primary" mode="indeterminate">
+  </mat-progress-spinner>
+</ng-template>

@@ -1,0 +1,42 @@
+<div class="search-container">
+    <form 
+      [formGroup]="searchForm" 
+      (ngSubmit)="search(searchInput.value)">
+      <mat-form-field class="search-field">
+        <input 
+          matInput
+          placeholder="Search"
+          #searchInput 
+          formControlName="search"
+          [matAutocomplete]="auto"
+          type="search"
+          aria-label="Number"
+          (input)="onChange()"/>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let coin of coinsType$ | async" [value]="coin.name">
+            <img class="example-option-img" aria-hidden [src]="coin.iconUrl" height="25">
+            <span>{{coin.name}}</span> |
+            <small>{{coin.symbol}}</small>
+          </mat-option>
+        </mat-autocomplete>
+        <button 
+          mat-button 
+          *ngIf="this.searchForm.get('search').value" 
+          matSuffix 
+          mat-icon-button 
+          aria-label="Clear"
+          type="reset"
+          (click)="search('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <button 
+        mat-button 
+        matSuffix 
+        mat-icon-button 
+        type="button"
+        (click)="onSubmit($event)">+
+        <!-- <mat-icon>search</mat-icon> -->
+      </button>
+    </form>
+  </div>
