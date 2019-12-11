@@ -12,69 +12,35 @@
           <div class="coins-data__coin">{{last.price}} USD</div>
         </div>
       </div>
+      <mat-accordion class="headers-align">
+        <mat-expansion-panel hideToggle>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Graphics
+            </mat-panel-title>
+            <mat-panel-description *ngIf="coin.history[0]">
+              {{coin.history[0].timestamp | date: 'mediumDate'}} |
+              {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
+              <mat-icon>trending_up</mat-icon>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <app-graphics [data]="coin"></app-graphics>
+        </mat-expansion-panel>
 
-      <mat-accordion class="example-headers-align">
-          <mat-expansion-panel hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Graphics
-              </mat-panel-title>
-              <mat-panel-description>
-                  {{coin.history[0].timestamp | date: 'mediumDate'}}  | 
-                  {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
-                <mat-icon>trending_up</mat-icon>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-        
-            <app-graphics [data]="coin"></app-graphics>
-          
-          </mat-expansion-panel>
-        
-          <mat-expansion-panel hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Table
-              </mat-panel-title>
-              <mat-panel-description>
-                  {{coin.history[0].timestamp | date: 'mediumDate'}}  | 
-                  {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
-                <mat-icon>table</mat-icon>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-          </mat-expansion-panel>
-        
-        </mat-accordion>
-    
-        <!-- <mat-accordion>
-          <mat-expansion-panel>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Graphics
-              </mat-panel-title>
-              <mat-panel-description>
-                {{coin.history[0].timestamp | date: 'mediumDate'}}  | 
-                {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
-              </mat-panel-description>
-              <mat-icon>map</mat-icon>
- 
-            </mat-expansion-panel-header>
-
-            <app-graphics [data]="coin"></app-graphics>
-
-          </mat-expansion-panel>
-          <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Table
-              </mat-panel-title>
-              <mat-panel-description>
-                  {{coin.history[0].timestamp | date: 'mediumDate'}}  | 
-                  {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-            <p>I'm visible because I am open</p>
-          </mat-expansion-panel>
-        </mat-accordion> -->
+        <mat-expansion-panel hideToggle>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Table
+            </mat-panel-title>
+            <mat-panel-description *ngIf="coin.history[0]">
+              {{coin.history[0].timestamp | date: 'mediumDate'}} |
+              {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
+              <mat-icon>table</mat-icon>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <app-table [data]="coin"></app-table>
+        </mat-expansion-panel>
+      </mat-accordion>
     </mat-card>
   </div>
 </div>

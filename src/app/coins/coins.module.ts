@@ -8,11 +8,11 @@ import { MatCardModule } from '@angular/material/card';
 import { SearchModule } from '../search/search.module';
 import { MatProgressSpinnerModule, MatIconModule, MatButtonModule } from '@angular/material';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { TableModule } from '../table/table.module';
 
 @NgModule({
   declarations: [
     CoinsComponent,
-    TableComponent,
     GraphicsComponent
   ],
   imports: [
@@ -23,7 +23,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    TableModule
   ]
 })
 export class CoinsModule { }

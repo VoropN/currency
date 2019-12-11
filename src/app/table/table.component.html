@@ -1,1 +1,11 @@
-<p>table works!</p>
+<table class="table" matSort (matSortChange)="sortData($event)">
+    <tr class="table-header">
+      <th class="table-date" mat-sort-header="date">Date</th>
+      <th class="table-price" mat-sort-header="price">Price | USD</th>
+    </tr>
+  
+    <tr class="table-content" *ngFor="let data of sortedData">
+      <td>{{data.timestamp | date: 'short'}}</td>
+      <td>{{data.price}}</td>
+    </tr>
+  </table>

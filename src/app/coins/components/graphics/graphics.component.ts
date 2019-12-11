@@ -22,13 +22,14 @@ export class GraphicsComponent implements OnInit {
   private xAxis: any;
   private yAxis: any;
 
-  constructor() { }
-
-  ngOnInit() {
+  public ngOnInit(): void {
     this.createChart();
   }
 
-  createChart() {
+  public createChart() {
+    if (!this.data.history.length) {
+      return;
+    }
     const element = this.chartContainer.nativeElement;
     const {top, bottom, left, right} = this.margin;
     this.width = element.offsetWidth - right;
@@ -57,13 +58,13 @@ export class GraphicsComponent implements OnInit {
       .attr('transform', `translate(${left},0)`)
       .call(d3.axisLeft(this.y))
     // .call(g => g.select('.domain').remove())
-      .call(g => g.select('.tick:last-of-type text').clone()
+      .call((gInside) => gInside.select('.tick:last-of-type text').clone()
         .attr('x', 3)
         .attr('text-anchor', 'start')
         .attr('font-weight', 'bold')
         .text('$ USD'))
         .attr('class', 'axis');
-    
+
     const line = d3.line()
       .curve(d3.curveStep)
       .defined(({price}: any): boolean => !isNaN(price))
@@ -90,9 +91,9 @@ export class GraphicsComponent implements OnInit {
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('d', line);
-        
+
     this.tooltip = this.svg.append('g');
-    
+
     this.svg.on('mousemove', () => this.mousemove(element));
     this.svg.on('mouseleave', () => this.tooltip.call(this.callout, null));
 
@@ -103,22 +104,22 @@ export class GraphicsComponent implements OnInit {
     if (!value) {
       return g.style('display', 'none');
     }
-  
+
     g
       .style('display', null)
       .style('pointer-events', 'none')
       .style('font', '10px sans-serif');
-      
+
     const path = g.selectAll('path')
       .data([null])
       .join('path')
       .attr('fill', 'white')
       .attr('stroke', 'black');
-      
+
     const text = g.selectAll('text')
       .data([null])
       .join('text')
-      .call(text => text
+      .call((textInside) => textInside
         .selectAll('tspan')
         .data((value + '').split(/\n/))
         .join('tspan')
@@ -126,14 +127,14 @@ export class GraphicsComponent implements OnInit {
         .attr('y', (d, i) => `${i * 1.1}em`)
         .style('font-weight', (_, i) => i ? null : 'bold')
         .text(d => d));
-        
+
     const {x, y, width: w, height: h} = text.node().getBBox();
-        
+
     text.attr('transform', `translate(${-w / 2},${38 - y})`);
     path.attr('d', `M${-10},35H-10l10,-35l0,0H${0}v${0}h-${ 0}z`)
       .attr('class', 'tooltip');
   }
-  
+
   private bisect(coordMouse) {
     const bisectData = d3.bisector(({timestamp}) => timestamp).left;
     const date = this.x.invert(coordMouse[0]);
@@ -143,12 +144,13 @@ export class GraphicsComponent implements OnInit {
     return Number(date) - (a && a.timestamp) > (b && b.timestamp) - Number(date) ? b : a;
   }
 
-  private mousemove(element) {
+  private mousemove(element): void {
   const {price, timestamp} = this.bisect(d3.mouse(element));
   this.tooltip
     .attr('transform', `translate(${this.x(timestamp)},${this.y(price)})`)
     .call(this.callout,
       `$${price} USD
-      ${new Date(timestamp).toLocaleString(undefined, {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'})}`);
+      ${new Date(timestamp).toLocaleString(undefined,
+        {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'})}`);
   }
 }
