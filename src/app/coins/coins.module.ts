@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import { CoinsComponent } from './components/coins/coins.component';
 import { TableComponent } from '../table/table.component';
 import { GraphicsComponent } from './components/graphics/graphics.component';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { SearchModule } from '../search/search.module';
-import { MatProgressSpinnerModule } from '@angular/material';
-
+import { MatProgressSpinnerModule, MatIconModule, MatButtonModule } from '@angular/material';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -21,6 +21,9 @@ import { MatProgressSpinnerModule } from '@angular/material';
     MatCardModule,
     SearchModule,
     MatProgressSpinnerModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatButtonModule
   ]
 })
 export class CoinsModule { }

@@ -4,16 +4,12 @@ export class Coin {
   symbol: string;
   iconUrl: string;
   price?: number;
-  timestamp?: Date;
+  itemName: string;
 
-  constructor({id, name, symbol, iconUrl, color, slug, allTimeHigh}) {
-    Object.entries({id, name, symbol, iconUrl, color, slug, allTimeHigh}).forEach(([key, value]) => this[key] = value);
+  constructor({id, name, symbol, iconUrl, slug = null, price = null}) {
+    Object.entries({id, name, symbol, iconUrl, slug, price}).forEach(([key, value]) => value && (this[key] = value));
+    this.itemName = name;
   }
-
-  public toString() {
-    return this.name;
-  }
-
 }
 
     // allTimeHigh: {price: "5.912189649828956", timestamp: 1506643200000}
