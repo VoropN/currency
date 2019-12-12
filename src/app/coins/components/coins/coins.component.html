@@ -1,4 +1,8 @@
-<app-search (deleteCoin)="onDelete($event)" (addCoin)="onAdd($event)"></app-search>
+<app-search
+  (deleteCoin)="onDelete($event)"
+  (deleteCoinsAll)="onDeleteAll()"
+  (addCoin)="onAdd($event)">
+</app-search>
 <div class="coins-container" *ngFor="let info of coins; index as i; trackBy: coinsTrackByFn">
   <div *ngIf="info.data$ | async as coin; else loading" class="coins-data">
     <mat-card class="coins__card">

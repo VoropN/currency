@@ -24,6 +24,7 @@ export class SearchComponent implements OnInit {
   public settings = {};
 
   @Output() public deleteCoin = new EventEmitter<Coin>();
+  @Output() public deleteCoinsAll = new EventEmitter<void>();
   @Output() public addCoin = new EventEmitter<Coin>();
 
   constructor(private coinsService: CoinsService) {}
@@ -31,10 +32,13 @@ export class SearchComponent implements OnInit {
   public ngOnInit() {
     this.settings = {
       text: 'Search currency',
-      enableSearchFilter: true,
-      searchBy: ['itemName'],
-      badgeShowLimit: 10,
       labelKey: 'name',
+      searchBy: ['itemName'],
+      enableSearchFilter: true,
+      enableCheckAll: false,
+      enableFilterSelectAll: false,
+      escapeToClose: false,
+      badgeShowLimit: 10,
       limitSelection: 10
     };
     this.selectedItems.forEach((coin) => this.addCoin.emit(coin));
@@ -44,8 +48,12 @@ export class SearchComponent implements OnInit {
     this.addCoin.emit(coin);
   }
 
-  public OnItemDeSelect(coin: Coin) {
+  public onItemDeSelect(coin: Coin) {
     this.deleteCoin.emit(coin);
+  }
+
+  public onGroupDeSelect() {
+    this.deleteCoinsAll.emit();
   }
 
   public onChange(searchValue): void {

@@ -32,4 +32,8 @@ export class CoinsComponent {
   public onDelete(coin: Coin): void {
     this.coins = this.coins.filter(({coin: {id}}) => id !== coin.id);
   }
+
+  public onDeleteAll(): void {
+    this.coins = [];
+  }
 }

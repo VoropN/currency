@@ -2,7 +2,14 @@
 <div *ngIf="showSpinner; else loading"></div>
 <div class="search-container">
   <div *ngIf="coins$ | async as coins2; else loading"></div>
-  <angular2-multiselect [data]="coins" [(ngModel)]="selectedItems" [settings]="settings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (input)="onChange($event.target.value)">
+  <angular2-multiselect
+    [data]="coins"
+    [(ngModel)]="selectedItems"
+    [settings]="settings"
+    (onSelect)="onItemSelect($event)"
+    (onDeSelect)="onItemDeSelect($event)"
+    (onDeSelectAll)="onGroupDeSelect()"
+    (input)="onChange($event.target.value)">
     <c-item>
       <ng-template let-item="item">
         <img *ngIf="item.iconUrl" class="option-img" aria-hidden [src]="item.iconUrl" height="25">
