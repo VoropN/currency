@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableComponent } from './table.component';
 import { MatSortModule } from '@angular/material/sort';
+import { MatButtonModule } from '@angular/material';
 
 
 @NgModule({
@@ -10,7 +11,8 @@ import { MatSortModule } from '@angular/material/sort';
   ],
   imports: [
     CommonModule,
-    MatSortModule
+    MatSortModule,
+    MatButtonModule
   ],
   exports: [
     TableComponent

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { DataChart } from '../coins/models/data-chart.model';
 import { CoinHistory } from '../coins/models/coin-history.model';
 import { Sort } from '@angular/material';
+import { saveAs } from 'node_modules/file-saver';
 
 @Component({
   selector: 'app-table',
@@ -10,7 +11,6 @@ import { Sort } from '@angular/material';
 })
 export class TableComponent implements OnInit {
   public sortedData: CoinHistory [];
-
   @Input() public data: DataChart;
 
   public ngOnInit(): void {
@@ -36,5 +36,20 @@ export class TableComponent implements OnInit {
 
   public compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  public onSave($event) {
+    const replacer = (key, value) => value === null ? '' : value; // specify how you want to handle null values here
+    const header = Object.keys(this.data.history[0]);
+    const csv = this.data.history.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+    csv.unshift(header.join(','));
+    const csvArray = csv.join('\r\n');
+
+    const blob = new Blob([csvArray], {type: 'text/csv' });
+    const history = this.data.history;
+    const option = {month: 'short', day: '2-digit'};
+    const start = history.length ? new Date (history[0].timestamp).toLocaleString('en-US', option) : '';
+    const end = history.length ? new Date (history[history.length - 1].timestamp).toLocaleString('en-US', option) : '';
+    saveAs(blob, `${this.data.coin.name} ${start}-${end}.csv`);
   }
 }
