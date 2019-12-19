@@ -1,39 +1,54 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CoinsService } from '../../services/coins.service';
-import { Observable, of } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
 import { Coin } from '../../models/coin.model';
-import { DataChart } from '../../models/data-chart.model';
-import { CoinsResponse } from '../../models/coins-response.model';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { CoinHistory } from '../../models/coin-history.model';
+import { ResponseCoins } from '../../models/response-coins.model';
+import { ResponseHistory } from '../../models/response-history';
+
 
 @Component({
   selector: 'app-coins',
   templateUrl: './coins.component.html',
   styleUrls: ['./coins.component.scss']
 })
-export class CoinsComponent {
-  public coins = [];
-  public timePeriod = '30d';
+export class CoinsComponent implements OnDestroy {
+  private destroy$ = new Subject();
+  private timePeriod = '30d';
+  public coinsHistory: CoinHistory[] = [];
+  public showSpinner: boolean;
 
   constructor(public coinsService: CoinsService) { }
 
-  public coinsTrackByFn(index: number, {coin: {id}}): number {
-    return id;
+  public coinsTrackByFn(index: number, coinDetails: CoinHistory): number {
+    return coinDetails && coinDetails.coin.id;
   }
 
   public onAdd(coin: Coin): void {
-    this.coins.push({
-      coin,
-      data$: this.coinsService.getDataByCurrency(coin.id, this.timePeriod).pipe(
-        concatMap(({data}: CoinsResponse): Observable<DataChart> => of({coin, history: data && data.history})))
+    this.showSpinner = true;
+    this.coinsService.getDataByCurrency(coin.id, this.timePeriod)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((response: ResponseHistory): void  => {
+      const coinHistory = new CoinHistory();
+      coinHistory.coin = coin;
+      coinHistory.history = response.data && response.data.history;
+      this.coinsHistory.push(coinHistory);
+      this.showSpinner = false;
     });
+
   }
 
   public onDelete(coin: Coin): void {
-    this.coins = this.coins.filter(({coin: {id}}) => id !== coin.id);
+    this.coinsHistory = this.coinsHistory.filter((coinHistory: CoinHistory): boolean => coinHistory.coin.id !== coin.id);
   }
 
   public onDeleteAll(): void {
-    this.coins = [];
+    this.coinsHistory = [];
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

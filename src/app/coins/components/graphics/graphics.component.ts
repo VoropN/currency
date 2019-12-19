@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
-import { DataChart } from '../../models/data-chart.model';
+import { CoinHistory } from '../../models/coin-history.model';
 
 @Component({
   selector: 'app-graphics',
@@ -10,7 +10,7 @@ import { DataChart } from '../../models/data-chart.model';
 })
 export class GraphicsComponent implements OnInit {
   @ViewChild('chart', {static: true}) private chartContainer: ElementRef;
-  @Input() private data: DataChart;
+  @Input() private data: CoinHistory;
   private margin: any = { top: 20, bottom: 20, left: 60, right: 15};
   private colors = 'steelblue';
   private svg: any;

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { CoinsComponent } from './components/coins/coins.component';
-import { TableComponent } from '../table/table.component';
 import { GraphicsComponent } from './components/graphics/graphics.component';
 import { MatCardModule } from '@angular/material/card';
 import { SearchModule } from '../search/search.module';

@@ -1,17 +1,18 @@
 <app-search
-  (deleteCoin)="onDelete($event)"
-  (deleteCoinsAll)="onDeleteAll()"
-  (addCoin)="onAdd($event)">
+(deleteCoin)="onDelete($event)"
+(deleteCoinsAll)="onDeleteAll()"
+(addCoin)="onAdd($event)">
 </app-search>
-<div class="coins-container" *ngFor="let info of coins; index as i; trackBy: coinsTrackByFn">
-  <div *ngIf="info.data$ | async as coin; else loading" class="coins-data">
+<div *ngIf="!showSpinner; else loading"></div>
+<div class="coins-container" *ngFor="let info of coinsHistory; index as i; trackBy: coinsTrackByFn">
+  <div *ngIf="info.history" class="coins-data">
     <mat-card class="coins__card">
       <div class="coins-info">
         <mat-card-header>
           <mat-card-title>{{info.coin.name}}</mat-card-title>
           <img mat-card-image [src]="info.coin.iconUrl" alt="avatar">
         </mat-card-header>
-        <div *ngIf="coin.history[coin.history.length - 1] as last" class="coins-data__last">
+        <div *ngIf="info.history[info.history.length - 1] as last" class="coins-data__last">
           <div class="coins-data__date">{{last.timestamp | date: 'short'}}</div>
           <div class="coins-data__coin">{{last.price}} USD</div>
         </div>
@@ -22,13 +23,13 @@
             <mat-panel-title>
               Graphics
             </mat-panel-title>
-            <mat-panel-description *ngIf="coin.history[0]">
-              {{coin.history[0].timestamp | date: 'mediumDate'}} |
-              {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
+            <mat-panel-description *ngIf="info.history[0]">
+              {{info.history[0].timestamp | date: 'mediumDate'}} |
+              {{info.history[info.history.length - 1].timestamp | date: 'mediumDate'}}
               <mat-icon>trending_up</mat-icon>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <app-graphics [data]="coin"></app-graphics>
+          <app-graphics [data]="info"></app-graphics>
         </mat-expansion-panel>
 
         <mat-expansion-panel hideToggle>
@@ -36,13 +37,13 @@
             <mat-panel-title>
               Table
             </mat-panel-title>
-            <mat-panel-description *ngIf="coin.history[0]">
-              {{coin.history[0].timestamp | date: 'mediumDate'}} |
-              {{coin.history[coin.history.length - 1].timestamp | date: 'mediumDate'}}
+            <mat-panel-description *ngIf="info.history[0]">
+              {{info.history[0].timestamp | date: 'mediumDate'}} |
+              {{info.history[info.history.length - 1].timestamp | date: 'mediumDate'}}
               <mat-icon>table</mat-icon>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <app-table [data]="coin"></app-table>
+          <app-table [data]="info"></app-table>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-card>

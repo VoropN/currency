@@ -1,7 +1,6 @@
 <mat-progress-spinner color="primary" mode="indeterminate" *ngIf="showSpinner"></mat-progress-spinner>
 <div *ngIf="showSpinner; else loading"></div>
 <div class="search-container">
-  <div *ngIf="coins$ | async as coins2; else loading"></div>
   <angular2-multiselect
     [data]="coins"
     [(ngModel)]="selectedItems"

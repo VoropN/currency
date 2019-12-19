@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { DataChart } from '../coins/models/data-chart.model';
-import { CoinHistory } from '../coins/models/coin-history.model';
+import { HistoryPoint } from '../coins/models/history-point.model';
 import { Sort } from '@angular/material';
 import { saveAs } from 'node_modules/file-saver';
+import { CoinHistory } from '../coins/models/coin-history.model';
 
 @Component({
   selector: 'app-table',
@@ -10,8 +10,8 @@ import { saveAs } from 'node_modules/file-saver';
   styleUrls: ['./table.component.scss']
 })
 export class TableComponent implements OnInit {
-  public sortedData: CoinHistory [];
-  @Input() public data: DataChart;
+  @Input() public data: CoinHistory;
+  public sortedData: HistoryPoint [];
 
   public ngOnInit(): void {
     this.sortedData = this.data.history.slice();
