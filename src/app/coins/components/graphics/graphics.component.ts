@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { CoinHistory } from '../../models/coin-history.model';
+import { Margin } from './models/margin.model';
+import { HistoryPoint } from '../../models/history-point.model';
 
 @Component({
   selector: 'app-graphics',
@@ -11,67 +13,69 @@ import { CoinHistory } from '../../models/coin-history.model';
 export class GraphicsComponent implements OnInit {
   @ViewChild('chart', {static: true}) private chartContainer: ElementRef;
   @Input() private data: CoinHistory;
-  private margin: any = { top: 20, bottom: 20, left: 60, right: 15};
-  private colors = 'steelblue';
-  private svg: any;
-  private tooltip: any;
+  private margin: Margin = { top: 20, bottom: 20, left: 60, right: 15};
   private width: number;
   private height: number;
-  private y: any;
-  private x: any;
-  private xAxis: any;
-  private yAxis: any;
+  private colors = 'steelblue';
+  private svg;
+  private tooltip;
+  private y;
+  private x;
+  private xAxis;
+  private yAxis;
+  private line;
 
   public ngOnInit(): void {
     this.createChart();
   }
 
-  public createChart() {
-    if (!this.data.history.length) {
-      return;
-    }
-    const element = this.chartContainer.nativeElement;
-    const {top, bottom, left, right} = this.margin;
-    this.width = element.offsetWidth - right;
-    this.height = element.offsetHeight - top - bottom;
-
-    this.x = d3.scaleUtc()
-      .domain(d3.extent(this.data.history, ({timestamp}) => timestamp))
-      .range([left, this.width - right]);
-
-    this.y = d3.scaleLinear()
-      .domain([0, d3.max(this.data.history, ({price}) => price)]).nice()
-      .range([this.height - bottom, top]);
-
+  private createAxisX(): void {
     this.xAxis = g => g
-      .attr('transform', `translate(0,${this.height - bottom})`)
-      .call(
-        d3
-        .axisBottom(this.x)
-        .tickFormat(d3.timeFormat('%b %d'))
-        .ticks(this.width / 80)
-        .tickSizeOuter(0)
-      )
-      .attr('class', 'axis');
+    .attr('transform', `translate(0,${this.height - this.margin.bottom})`)
+    .call(
+      d3
+      .axisBottom(this.x)
+      .tickFormat(d3.timeFormat('%b %d'))
+      .ticks(this.width / 80)
+      .tickSizeOuter(0)
+    )
+    .attr('class', 'axis');
+  }
 
+  private createAxisY(): void {
     this.yAxis = g => g
-      .attr('transform', `translate(${left},0)`)
+      .attr('transform', `translate(${this.margin.left},0)`)
       .call(d3.axisLeft(this.y))
-    // .call(g => g.select('.domain').remove())
       .call((gInside) => gInside.select('.tick:last-of-type text').clone()
         .attr('x', 3)
         .attr('text-anchor', 'start')
         .attr('font-weight', 'bold')
         .text('$ USD'))
         .attr('class', 'axis');
+  }
 
-    const line = d3.line()
+  private addSignaturesAxisX(): void {
+    this.x = d3.scaleUtc()
+      .domain(d3.extent(this.data.history, ({timestamp}) => timestamp))
+      .range([this.margin.left, this.width - this.margin.right]);
+  }
+
+  private addSignaturesAxisY(): void {
+    this.y = d3.scaleLinear()
+      .domain([0, d3.max(this.data.history, ({price}) => price)]).nice()
+      .range([this.height - this.margin.bottom, this.margin.top]);
+  }
+
+  private addLine(): void {
+    this.line = d3.line()
       .curve(d3.curveStep)
-      .defined(({price}: any): boolean => !isNaN(price))
+      .defined(({price}: any) => !isNaN(price))
       .x(({timestamp}: any) => this.x(timestamp))
       .y(({price}: any) => this.y(price));
+  }
 
-    this.svg = d3.select(element).append('svg')
+  private createSVG(): void {
+    this.svg = d3.select(this.chartContainer.nativeElement).append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
       .style('-webkit-tap-highlight-color', 'transparent')
@@ -90,17 +94,36 @@ export class GraphicsComponent implements OnInit {
       .attr('stroke-width', 1)
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
-      .attr('d', line);
+      .attr('d', this.line);
+  }
 
+  private addListeners(): void {
     this.tooltip = this.svg.append('g');
+    this.svg.on('mousemove', () => this.mousemove());
+    this.svg.on('mouseleave', () => this.tooltip.call(this.showTooltip, null));
+  }
 
-    this.svg.on('mousemove', () => this.mousemove(element));
-    this.svg.on('mouseleave', () => this.tooltip.call(this.callout, null));
+  private createChart(): SVGElement | number {
+    if (!this.data.history.length) {
+      return;
+    }
+
+    const element = this.chartContainer.nativeElement;
+    this.width = element.offsetWidth - this.margin.right;
+    this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+
+    this.addSignaturesAxisX();
+    this.addSignaturesAxisY();
+    this.createAxisX();
+    this.createAxisY();
+    this.addLine();
+    this.createSVG();
+    this.addListeners();
 
     return this.svg.node();
   }
 
-  private callout(g, value) {
+  private showTooltip(g, value: string | null) {
     if (!value) {
       return g.style('display', 'none');
     }
@@ -135,7 +158,7 @@ export class GraphicsComponent implements OnInit {
       .attr('class', 'tooltip');
   }
 
-  private bisect(coordMouse) {
+  private searchPoint(coordMouse: [number, number]): HistoryPoint {
     const bisectData = d3.bisector(({timestamp}) => timestamp).left;
     const date = this.x.invert(coordMouse[0]);
     const index = bisectData(this.data.history.sort(({timestamp: f}, {timestamp: s}) => f - s), date, 1);
@@ -144,11 +167,11 @@ export class GraphicsComponent implements OnInit {
     return Number(date) - (a && a.timestamp) > (b && b.timestamp) - Number(date) ? b : a;
   }
 
-  private mousemove(element): void {
-  const {price, timestamp} = this.bisect(d3.mouse(element));
+  private mousemove(): void {
+  const {price, timestamp} = this.searchPoint(d3.mouse(this.chartContainer.nativeElement));
   this.tooltip
     .attr('transform', `translate(${this.x(timestamp)},${this.y(price)})`)
-    .call(this.callout,
+    .call(this.showTooltip,
       `$${price} USD
       ${new Date(timestamp).toLocaleString(undefined,
         {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'})}`);

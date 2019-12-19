@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Coin } from '../models/coin.model';
-import { Observable } from 'rxjs';
-import { map, debounceTime } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { map, debounceTime, retry, catchError } from 'rxjs/operators';
 import { Api } from 'src/app/shared/config/api.enum';
-import { ResponseCoins } from '../models/response-coins.model';
-import { ResponseHistory } from '../models/response-history';
-import { CoinHistory } from '../models/coin-history.model';
+import { CoinsApi } from '../models/api/coins-api.model';
+import { HistoryApi } from '../models/api/history-api';
 import { SearchParams } from '../models/search-params.model';
 
 @Injectable({
@@ -17,15 +16,31 @@ export class CoinsService {
 
   constructor(private http: HttpClient) {}
 
-  public getDataByCurrency(coinId: number, timePeriod: string): Observable<ResponseHistory> {
-    return this.http.get<ResponseHistory>(`${Api.currency}coin/${coinId}/history/${timePeriod}?base=${this.baseCurrency}`);
+  public getDataByCurrency(coinId: number, timePeriod: string): Observable<HistoryApi> {
+    return this.http.get<HistoryApi>(`${Api.currency}coin/${coinId}/history/${timePeriod}?base=${this.baseCurrency}`)
+      .pipe(
+        retry(3),
+        catchError((error) => this.handleError(error, 'getDataByCurrency', coinId)));
   }
 
   public getCointsByParam(searchParams: SearchParams): Observable<Coin[]> {
     let params = new HttpParams();
     Object.keys(searchParams).forEach((key: string): HttpParams => params = params.set(key, searchParams[key]));
-    return this.http.get<ResponseCoins>(`${Api.currency}coins`, {params}).pipe(
-      debounceTime(200),
-      map((response: ResponseCoins): Coin[] => response.data && response.data.coins && response.data.coins.map((coin) => new Coin(coin))));
+    return this.http.get<CoinsApi>(`${Api.currency}coins`, {params})
+      .pipe(
+        debounceTime(200),
+        map((response: CoinsApi): Coin[] => response.data && response.data.coins && response.data.coins.map((coin) => new Coin(coin))),
+        retry(3),
+        catchError((error) => this.handleError(error, 'getCointsByParam', searchParams)));
+  }
+
+  private handleError(error: HttpErrorResponse, methodName, params): Observable<never> {
+    console.error(`"${methodName}" method received an error while trying to get data for params "${JSON.stringify(params)}"`);
+    if (error.error instanceof ErrorEvent) {
+      console.error('An error occurred:', error.error.message);
+    } else {
+      console.error(`Backend returned code ${error.status}, body was: ${JSON.stringify(error.error)}`);
+    }
+    return throwError('Something bad happened; please try again later.');
   }
 }

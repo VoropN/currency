@@ -4,8 +4,7 @@ import { Coin } from '../../models/coin.model';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { CoinHistory } from '../../models/coin-history.model';
-import { ResponseCoins } from '../../models/response-coins.model';
-import { ResponseHistory } from '../../models/response-history';
+import { HistoryApi } from '../../models/api/history-api';
 
 
 @Component({
@@ -29,7 +28,7 @@ export class CoinsComponent implements OnDestroy {
     this.showSpinner = true;
     this.coinsService.getDataByCurrency(coin.id, this.timePeriod)
     .pipe(takeUntil(this.destroy$))
-    .subscribe((response: ResponseHistory): void  => {
+    .subscribe((response: HistoryApi): void  => {
       const coinHistory = new CoinHistory();
       coinHistory.coin = coin;
       coinHistory.history = response.data && response.data.history;
@@ -40,7 +39,7 @@ export class CoinsComponent implements OnDestroy {
   }
 
   public onDelete(coin: Coin): void {
-    this.coinsHistory = this.coinsHistory.filter((coinHistory: CoinHistory): boolean => coinHistory.coin.id !== coin.id);
+    this.coinsHistory = this.coinsHistory.filter((coinHistory: CoinHistory) => coinHistory.coin.id !== coin.id);
   }
 
   public onDeleteAll(): void {

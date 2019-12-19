@@ -72,6 +72,8 @@ $selected-background: #e9f4ff;
 }
 
 .dropdown-list {
+  overflow: hidden;
+
   ul {
     li:hover {
       background: $list-hover-background;

@@ -1,8 +1,17 @@
+.button-save {
+  position: absolute;
+  right: 15px;
+}
+
 .table {
+  &-container {
+    position: relative;
+  }
+
   &-header,
   &-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     grid-gap: 25px;
+    grid-template-columns: 1fr 1fr;
   }
 }

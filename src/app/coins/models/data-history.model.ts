@@ -1,5 +1,4 @@
-import { HistoryPoint } from './history-point.model'
-import { Coin } from './coin.model'
+import { HistoryPoint } from './history-point.model';
 
 export class DataHistory {
   change: number;

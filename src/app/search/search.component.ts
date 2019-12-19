@@ -14,7 +14,7 @@ import { SearchParams } from '../coins/models/search-params.model';
 })
 export class SearchComponent implements OnInit, OnDestroy {
   @Output() public deleteCoin = new EventEmitter<Coin>();
-  @Output() public deleteCoinsAll = new EventEmitter<void>();
+  @Output() public deleteAllCoins = new EventEmitter<void>();
   @Output() public addCoin = new EventEmitter<Coin>();
   private destroy$ = new Subject();
   public settings: Partial<DropdownSettings>;
@@ -43,7 +43,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       {symbol: 'XLM', name: 'Stellar', id: 6, iconUrl: 'https://cdn.coinranking.com/78CxK1xsp/Stellar_symbol_black_RGB.svg'},
     ];
     this.coins = this.selectedItems;
-    this.selectedItems.forEach((coin: Coin): void => this.addCoin.emit(coin));
+    this.selectedItems.forEach((coin: Coin) => this.addCoin.emit(coin));
     this.showSpinner = false;
   }
 
@@ -56,10 +56,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   public onGroupDeSelect(): void {
-    this.deleteCoinsAll.emit();
+    this.deleteAllCoins.emit();
   }
 
-  public onChange(searchValue): void {
+  public onChange(searchValue: string): void {
     this.showSpinner = false;
     if (!searchValue || searchValue.length < 1) {
       this.coins = [];
@@ -67,7 +67,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.showSpinner = true;
       this.coinsService.getCointsByParam({prefix: searchValue})
         .pipe(takeUntil(this.destroy$))
-        .subscribe((coins: Coin[]): void => {
+        .subscribe((coins: Coin[]) => {
         this.coins = coins;
         this.showSpinner = false;
       });
